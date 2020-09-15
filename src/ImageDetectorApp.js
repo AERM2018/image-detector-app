@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import * as ml5 from 'ml5'
 import { analyzeImage } from './helpers/analyzeImage';
 
 const ImageDetectorApp = () => {
