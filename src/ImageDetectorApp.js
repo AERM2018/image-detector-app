@@ -1,50 +1,50 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import InputFile from './components/InputFile';
+import TableResults from './components/TableResults';
 import { analyzeImage } from './helpers/analyzeImage';
+import { usePrediction } from './hooks/usePrediction';
 
 const ImageDetectorApp = () => {
 
-    const btn = useRef("btn-add")
     const [dataImage, setDataImage] = useState(null);
-    const [prediction, setPrediction] = useState({ loading: true });
-    const { label, confidence, loading } = prediction
+    const { data, loading } = usePrediction(dataImage)
 
-    const handleClick = () => {
 
-        btn.current.addEventListener('change', ({ target }) => {
-            const image = target.files[0]
-
-            let readear = new FileReader()
-
-            readear.onload = (({ target }) => {
-                setDataImage(target.result)
-            })
-            readear.readAsDataURL(image)
-
-        })
-    }
-
-    useEffect(() => {
-        if (dataImage) {
-            analyzeImage().then(res => {
-                setPrediction({
-                    loading: false,
-                    ...res
-                })
-            })
-        }
-    }, [dataImage]);
 
     return (
-        <div>
+        <div className="m-5">
 
-            <img id="img" src={(!dataImage) ? "./assets/images/img-icon.png" : dataImage} alt="Imagen" style={{ maxWidth: 450 }} />
-            {(!loading) && <h4>{`${label} --> ${confidence * 100}%`}</h4>}
+            <h1>ml5.js + React.js</h1>
+            <div className="row mt-3">
+                <div className="col-5">
 
-            <input
-                type="file"
-                onClick={handleClick}
-                ref={btn}
-            />
+                    <img className="rounded " id="img" src={(!dataImage) ? "./assets/images/img-icon.png" : dataImage} alt="Imagen" style={{ maxWidth: 450 }} />
+
+                </div>
+
+                <div className="col-5">
+                    <InputFile dataImage={dataImage} setDataImage={setDataImage} />
+                    {/* <button className="btn btn-primary">analyzeImage</button> */}
+
+                    {
+                        (data.length === 0 && !loading) && <div className="alert alert-primary"> Seleccione una imagen, por favor</div>
+                    }
+                    {
+                        (loading)
+                            ? <div class="text-center">
+                                <div class="spinner-border m-5 text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            : <TableResults info={data} />
+
+
+                    }
+                </div>
+
+
+
+            </div>
         </div>
     );
 }
